@@ -1,0 +1,22 @@
+Package: geocode
+Version: 1.0
+Date: 2012-03-28
+Title: geocode
+Author: Jason Bryer <jason@bryer.org>
+Maintainer: Jason Bryer <jason@bryer.org>
+Depends:
+    R (>= 2.14.0),
+    RCurl,
+    XML
+Description: Provides a mechanism to get longitude, latitude, and postal code
+    information based upon Internet Protocol (IP) addresses of the
+    xxx.xxx.xxx.xxx form or from street addresses.
+License: GPL (>= 2)
+URL: http://jbryer.github.org/geocode, http://www.maxmind.com/app/geolitecity,
+    http://developer.yahoo.com/maps/rest/V1/geocode.html,
+    http://code.google.com/apis/maps/documentation/services.html#Geocoding
+Collate:
+    'geocode-project.r'
+    'geocode.google.r'
+    'geocode.yahoo.r'
+    'geolite.r'
