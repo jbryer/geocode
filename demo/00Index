@@ -1,0 +1,2 @@
+geocode	 This demo demonstrates the Google and Yahoo geocoding functions.
+ipgeocode  This demo demonstrates the geocoding of IP addresses using the Geolite database.

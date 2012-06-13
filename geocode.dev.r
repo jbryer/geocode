@@ -10,5 +10,5 @@ document('geocode')
 build('geocode')
 install('geocode')
 
-library(geocode)
+require(geocode)
 ls('package:geocode')

@@ -3,6 +3,7 @@
 #' 
 #' @param address the street address to geocode.
 #' @param key the Google Maps API key.
+#' @references \url{https://developers.google.com/maps/documentation/geocoding/}
 #' @return a geocoded point.
 #' @export
 geocode.google <- function(address, key='anonymous') {
@@ -19,10 +20,14 @@ geocode.google <- function(address, key='anonymous') {
 	lat = split[3]
 	lon = split[4]
 	close(u)
-	pt <- data.frame(longitude=lon, latitude=lat, 
+	pt <- list(longitude=lon, 
+			   latitude=lat,
+			   address=address,
+			   accuracy.code=acc,
 			   accuracy=GoogleAccuracyCodes[which(GoogleAccuracyCodes$Value == acc),'Description'],
 			   status=GoogleStatusCodes[which(GoogleStatusCodes$Code == sta),'Code'],
-			   stringsAsFactors=FALSE)
+			   source='Google'
+	)
 	class(pt) <- "geocode"
 	return(pt)
 }

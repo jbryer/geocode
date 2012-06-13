@@ -3,7 +3,7 @@
 \title{Returns the longitude and latitude of a geocoded point using the Yahoo
 Maps API.}
 \usage{
-  geocode.yahoo(key, address)
+  geocode.yahoo(address, key)
 }
 \arguments{
   \item{address}{the street address to geocode.}
@@ -16,5 +16,8 @@ Maps API.}
 \description{
   Returns the longitude and latitude of a geocoded point
   using the Yahoo Maps API.
+}
+\references{
+  \url{http://developer.yahoo.com/geo/placefinder/guide/}
 }
 

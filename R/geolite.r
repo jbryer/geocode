@@ -1,16 +1,27 @@
 #'
 #' @export
-geolite.update <- function(month=NULL, year=NULL) {
+geolite.available <- function() {
+	urlBase = "http://geolite.maxmind.com/download/geoip/database/GeoLiteCity_CSV/"
+	flist = readLines(url(urlBase))
+	flist = flist[grep('<a href=\"GeoLiteCity_', flist)]
+	result = data.frame(filename=substr(flist, 10, 33), stringsAsFactors=FALSE)
+	result$date = substr(result$filename, 13, 20)
+	result = result[order(result$date, decreasing=TRUE),]
+	return(result)
+}
+
+#'
+#' @export
+geolite.update <- function(year=NULL, month=NULL, day=NULL) {
 	urlBase = "http://geolite.maxmind.com/download/geoip/database/GeoLiteCity_CSV/GeoLiteCity_"
+	newversion = NA
 	if(is.null(month)) {
-		month = format(Sys.time(), "%m")
+		newversion = geolite.available()[1,'date']
+	} else {
+		paste(year, month, day, sep='')
 	}
-	if(is.null(year)) {
-		year = paste("20", format(Sys.time(), "%y"), sep="")
-	}
-	newversion = paste(year, month, "01", sep="")
 	if(nrow(geolite.version()) > 0) {
-		print("Data files are already up to date.")
+		message("Data files are already up to date.")
 	} else {
 		geolite.delete()
 		url = paste(urlBase, newversion, sep="")
@@ -38,15 +49,17 @@ geolite.delete <- function() {
 #' @export
 geolite.load <- function() {
 	if(length(names(geolite.location)) == 0 || length(names(geolite.blocks)) == 0) {
-		print("Loading GeoLiteCity database files. This may take a while, please be patient...")
+		message("Loading GeoLiteCity database files. This may take a while, please be patient...")
 		flush.console()
 		data.dir = paste(system.file(package="geocode"), "/data/", sep="")
 		data.dir = paste(data.dir, "GeoLiteCity_", geolite.version()$version[1], "/", sep="")
-		geolite.location <<- read.csv(paste(data.dir, "GeoLiteCity-Location.csv", sep=""), skip=1, header=TRUE)
-		print("Locations loaded...")
+		geolite.location <<- read.csv(paste(data.dir, "GeoLiteCity-Location.csv", sep=""), 
+									  skip=1, header=TRUE)
+		message("Locations loaded...")
 		flush.console()
-		geolite.blocks <<- read.csv(paste(data.dir, "GeoLiteCity-Blocks.csv", sep=""), skip=1, header=TRUE)
-		print("Blocks loaded...")
+		geolite.blocks <<- read.csv(paste(data.dir, "GeoLiteCity-Blocks.csv", sep=""), 
+								   skip=1, header=TRUE)
+		message("Blocks loaded...")
 	}
 }
 
@@ -63,7 +76,7 @@ geolite.version <- function() {
 			break()
 		}
 	}
-	r
+	return(r)
 }
 
 #'
@@ -73,18 +86,32 @@ geocode.ips <- function(ips) {
 	ans = data.frame()
 	for(ip in ips) {
 		parts = unlist(strsplit(ip, "\\."))
-		ipnum = 16777216*as.numeric(parts[1]) + 65536*as.numeric(parts[2]) + 256*as.numeric(parts[3]) + as.numeric(parts[4])
+		ipnum = 16777216*as.numeric(parts[1]) + 
+			65536*as.numeric(parts[2]) + 
+			256*as.numeric(parts[3]) + 
+			as.numeric(parts[4])
 		group1 = geolite.blocks[which(geolite.blocks$startIpNum < ipnum),]
 		group2 = group1[which(group1$endIpNum > ipnum),]
 		if(nrow(group2) > 0) {
 			ans = rbind(ans, 
-						cbind(ip=ip, geolite.location[which(geolite.location$locId == group2[1,]$locId),])
-						)
+					cbind(ip=ip, 
+						  geolite.location[which(geolite.location$locId == group2[1,]$locId),])
+					)
 		} else {
-			ans = rbind(ans, data.frame(ip=ip, locId=NA, country=NA, region=NA, city=NA, postalCode=NA, latitude=NA, longitude=NA, metroCode=NA, areaCode=NA))
+			ans = rbind(ans, data.frame(
+				ip=ip, 
+				locId=NA, 
+				country=NA, 
+				region=NA, 
+				city=NA, 
+				postalCode=NA, 
+				latitude=NA, 
+				longitude=NA, 
+				metroCode=NA, 
+				areaCode=NA))
 		}
 	}
 	row.names(ans) = 1:nrow(ans)
-	ans
+	return(ans)
 }
 

@@ -20,3 +20,4 @@ Collate:
     'geocode.google.r'
     'geocode.yahoo.r'
     'geolite.r'
+    'geocode.r'
